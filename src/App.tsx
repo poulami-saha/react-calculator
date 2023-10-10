@@ -18,11 +18,15 @@ function App() {
   };
 
   const evaluateExpression = () => {
-    const total = eval(displayCharacter.join(""));
-    if (Number.isInteger(total)) {
-      setResult(total);
-    } else {
-      setResult(Math.round(total * 10000) / 10000);
+    try {
+      const total = eval(displayCharacter.join(""));
+      if (Number.isInteger(total)) {
+        setResult(total);
+      } else {
+        setResult(Math.round(total * 10000) / 10000);
+      }
+    } catch (err) {
+      setResult(0);
     }
     return;
   };
