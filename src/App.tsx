@@ -3,22 +3,27 @@ import "./App.css";
 
 function App() {
   const [toEvaluate, setToEvaluate] = useState<any[]>([]);
-  const [operand, setOperand] = useState<number | undefined | string>(
-    undefined
-  );
+  const [operand, setOperand] = useState<number | string>(0);
   const [lastOperator, setLastOperator] = useState<string>();
   const [displayCharacter, setDisplayCharacter] = useState<string[]>([]);
   const [result, setResult] = useState(0);
 
   const buttonHandler = (value: string) => {
-    setDisplayCharacter([...displayCharacter, value]);
+    if (displayCharacter.length === 1 && displayCharacter[0] === "0") {
+      setDisplayCharacter([value]);
+    } else {
+      setDisplayCharacter([...displayCharacter, value]);
+    }
     const newOperand =
-      operand !== undefined ? operand.toString() + value : value;
+      operand !== undefined && operand !== 0
+        ? operand.toString() + value
+        : value;
     setOperand(Number(newOperand));
   };
 
   const evaluateExpression = () => {
     try {
+      setDisplayCharacter([...displayCharacter, " = "]);
       const total = eval(displayCharacter.join(""));
       if (Number.isInteger(total)) {
         setResult(total);
@@ -45,13 +50,13 @@ function App() {
       }
       return;
     }
-    if (!operand) {
-      return;
-    }
-    setDisplayCharacter([...displayCharacter, currentOperator]);
+    // if (!operand) {
+    //   return;
+    // }
+    setDisplayCharacter([...displayCharacter, " " + currentOperator + " "]);
     if (operand) {
       setToEvaluate([...toEvaluate, operand]);
-      setOperand(undefined);
+      setOperand(0);
       if (
         (lastOperator === "+" || lastOperator === "-") &&
         (currentOperator === "*" || currentOperator === "/")
@@ -67,8 +72,9 @@ function App() {
 
   const clear = () => {
     setToEvaluate([]);
-    setDisplayCharacter([]);
+    setDisplayCharacter(["0"]);
     setResult(0);
+    setLastOperator(undefined);
   };
   return (
     <div className="flex items-center justify-center min-h-screen min-w-full  bg-[#c2c2d6] ">
@@ -81,7 +87,6 @@ function App() {
         </div>
         <div
           className="h-12 text-white font-bold text-right text-lg leading-1"
-          id="display"
         >
           {result}
         </div>
